@@ -1,7 +1,6 @@
 name: Fetch MGM Data
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["master"]
 
@@ -34,6 +33,13 @@ jobs:
           mkdir -p results
           mv veriler.csv results/mgm_data_$(date +"%Y-%m-%d").csv  # Veri dosyasını results dizinine taşı
 
+      - name: Fetch latest changes
+        run: git fetch origin master
+
+      - name: Merge changes
+        run: |
+          git merge origin/master --no-edit || true
+
       - name: Commit and push results
         run: |
           git config --global user.name "GitHub Actions"
@@ -42,5 +48,4 @@ jobs:
           git commit -m "Fetch MGM data: $(date +"%Y-%m-%d")"
           git push
         env:
-          # GitHub Token kullanarak kimlik doğrulama yapıyoruz
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
