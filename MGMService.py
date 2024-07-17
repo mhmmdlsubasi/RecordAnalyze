@@ -12,7 +12,6 @@ Fonksiyonlar:
 """
 
 import requests
-from bs4 import BeautifulSoup
 
 
 def get_data(endpoint, params=None):
@@ -38,26 +37,3 @@ def get_data(endpoint, params=None):
     except requests.exceptions.RequestException as e:
         return None
 
-
-def get_request(endpoint, params=None):
-    """
-    MGM web sitesinden HTML verisi çeker.
-
-    Args:
-        endpoint (str): Alınacak endpoint.
-        params (dict, optional): İsteğin parametreleri. Varsayılan: None.
-
-    Returns:
-        BeautifulSoup object or None: MGM web sitesinden alınan ayrıştırılmış HTML verisi,
-        hata durumunda None.
-    """
-    base_url = "https://www.mgm.gov.tr/"
-    url = f"{base_url}{endpoint}"
-
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()  # HTTP hatalarını kontrol et
-        soup = BeautifulSoup(response.text, "html.parser")
-        return soup
-    except requests.exceptions.RequestException as e:
-        return None
