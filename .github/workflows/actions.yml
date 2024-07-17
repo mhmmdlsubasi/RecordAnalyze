@@ -1,43 +1,43 @@
-name: run main.py
-#Replace your python file name above
+name: Fetch MGM Data
 
 on:
+  # Runs on pushes targeting the default branch
   push:
     branches: ["master"]
 
-
 jobs:
-  build:
+  fetch-data:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content to github runner
+      - name: Update submodule
+        run: git submodule update --init --recursive
 
-      - name: setup python
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.9' # install the python version needed
+          python-version: '3.x'
 
-      - name: install python packages
+      - name: Install dependencies
         run: |
-          pip install requests #Python Packages
-          #Install all the modules here
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Alt modülün gereksinimlerini yükle
 
-      - name: execute py script # run main.py
-        env:
-          SOME_SECRET: ${{ secrets.SOME_SECRET }}
-        run: python main.py
+      - name: Fetch MGM data
+        run: |
+          python main.py  # Alt modüldeki MGM veri çekme betiğini çalıştır
 
-      - name: commit files
+      - name: Save results
+        run: |
+          mkdir -p results
+          mv veriler.csv results/mgm_data_$(date +"%Y-%m-%d").csv  # Veri dosyasını results dizinine taşı
+
+      - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
-
-      - name: push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
+          git add .
+          git commit -m "Add MGM data for $(date +'%Y-%m-%d')"
+          git push
