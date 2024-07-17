@@ -28,9 +28,11 @@ jobs:
           python main.py
 
       - name: Commit and push changes
+        env:
+          TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
           git commit -m "update data" -a || echo "No changes to commit"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mhmmdlsubasi/RecordAnalyze.git master
+          git push https://$TOKEN@github.com/mhmmdlsubasi/RecordAnalyze.git master
